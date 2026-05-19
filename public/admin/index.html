@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Eman Gallery</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --pink:#f0a0b8;--pink-light:#fce8ef;--pink-dark:#c0507a;
+  --beige:#f5ede0;--beige-mid:#e8d5be;
+  --mauve:#9b7fb6;--mauve-light:#ede5f5;--mauve-dark:#6b4f8a;
+  --white:#fffaf7;--text:#3a2535;--muted:#9a7a90;
+  --green:#25d366;--red:#e05555;
+}
+body{font-family:'Tajawal',sans-serif;background:#f8f4fb;color:var(--text);min-height:100vh;}
+header{
+  background:linear-gradient(135deg,var(--mauve-dark),var(--pink-dark));
+  color:#fff;padding:1.2rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+header h1{font-size:1.4rem;font-weight:800;}
+header a{color:rgba(255,255,255,0.8);text-decoration:none;font-size:0.9rem;}
+header a:hover{color:#fff;}
+
+.container{max-width:960px;margin:0 auto;padding:2rem 1.5rem;}
+
+/* STATS BAR */
+.stats{display:flex;gap:1rem;margin-bottom:2rem;flex-wrap:wrap;}
+.stat{
+  flex:1;min-width:140px;
+  background:#fff;border-radius:14px;padding:1rem 1.2rem;
+  border:1.5px solid var(--beige-mid);
+}
+.stat-n{font-size:2rem;font-weight:800;color:var(--mauve-dark);}
+.stat-l{font-size:0.85rem;color:var(--muted);}
+
+/* CARD */
+.card{
+  background:#fff;border-radius:18px;padding:1.5rem;
+  border:1.5px solid var(--beige-mid);margin-bottom:2rem;
+}
+.card-title{
+  font-size:1.1rem;font-weight:700;color:var(--mauve-dark);
+  margin-bottom:1.2rem;padding-bottom:0.8rem;
+  border-bottom:1px solid var(--beige-mid);
+  display:flex;align-items:center;gap:8px;
+}
+
+/* FORM */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-group.full{grid-column:1/-1;}
+label{font-size:0.88rem;font-weight:600;color:var(--muted);}
+input,textarea,select{
+  padding:0.65rem 0.9rem;border:1.5px solid var(--beige-mid);
+  border-radius:10px;font-family:'Tajawal',sans-serif;font-size:0.95rem;
+  color:var(--text);background:#fff;transition:border 0.2s;
+  width:100%;
+}
+input:focus,textarea:focus,select:focus{
+  outline:none;border-color:var(--mauve);
+}
+textarea{resize:vertical;min-height:80px;}
+
+/* IMAGE UPLOAD ZONE */
+.upload-zone{
+  border:2px dashed var(--mauve);border-radius:14px;
+  padding:2rem;text-align:center;cursor:pointer;
+  background:var(--mauve-light);transition:all 0.2s;
+  position:relative;
+}
+.upload-zone:hover{background:#e0d4f0;border-color:var(--mauve-dark);}
+.upload-zone.drag-over{background:#d4c5eb;border-color:var(--mauve-dark);}
+.upload-zone input[type=file]{
+  position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;
+  border:none;background:transparent;padding:0;
+}
+.upload-icon{font-size:2.5rem;margin-bottom:0.5rem;}
+.upload-text{font-size:0.95rem;color:var(--mauve-dark);font-weight:600;}
+.upload-hint{font-size:0.8rem;color:var(--muted);margin-top:4px;}
+
+/* PREVIEW */
+.img-preview{
+  display:flex;flex-wrap:wrap;gap:10px;margin-top:1rem;
+}
+.preview-item{
+  position:relative;width:80px;height:80px;border-radius:10px;overflow:hidden;
+  border:2px solid var(--mauve);
+}
+.preview-item img{width:100%;height:100%;object-fit:cover;}
+.preview-item button{
+  position:absolute;top:3px;left:3px;
+  background:rgba(224,85,85,0.9);color:#fff;
+  border:none;border-radius:50%;width:22px;height:22px;
+  font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+
+/* BTN */
+.btn{
+  padding:0.75rem 1.8rem;border-radius:12px;font-family:'Tajawal',sans-serif;
+  font-size:1rem;font-weight:700;cursor:pointer;border:none;transition:all 0.2s;
+}
+.btn-save{background:linear-gradient(135deg,var(--mauve-dark),var(--pink-dark));color:#fff;}
+.btn-save:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(107,79,138,0.3);}
+.btn-cancel{background:var(--beige);color:var(--text);}
+.btn-del{background:transparent;border:1.5px solid var(--red);color:var(--red);padding:0.4rem 0.9rem;font-size:0.85rem;}
+.btn-del:hover{background:#fff0f0;}
+.btn-edit{background:var(--mauve-light);color:var(--mauve-dark);padding:0.4rem 0.9rem;font-size:0.85rem;border:1.5px solid var(--mauve);}
+.btn-edit:hover{background:#e0d4f0;}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:1rem;}
+
+/* PRODUCTS LIST */
+.products-list{display:flex;flex-direction:column;gap:1rem;}
+.prod-item{
+  display:flex;align-items:center;gap:1rem;
+  background:#fff;border-radius:14px;padding:0.9rem 1.2rem;
+  border:1.5px solid var(--beige-mid);
+}
+.prod-thumb{
+  width:60px;height:60px;border-radius:10px;object-fit:cover;
+  background:var(--mauve-light);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1.8rem;
+  overflow:hidden;
+}
+.prod-thumb img{width:100%;height:100%;object-fit:cover;}
+.prod-info{flex:1;min-width:0;}
+.prod-name{font-weight:700;font-size:0.95rem;}
+.prod-meta{font-size:0.8rem;color:var(--muted);margin-top:2px;}
+.prod-actions{display:flex;gap:8px;flex-shrink:0;}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);
+  background:var(--mauve-dark);color:#fff;
+  padding:0.8rem 1.8rem;border-radius:30px;font-weight:600;
+  transition:transform 0.3s;z-index:999;pointer-events:none;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* MODAL */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(50,20,50,0.5);
+  display:flex;align-items:center;justify-content:center;
+  z-index:500;opacity:0;pointer-events:none;transition:opacity 0.2s;
+  padding:1rem;
+}
+.modal-bg.open{opacity:1;pointer-events:all;}
+.modal{
+  background:#fff;border-radius:20px;padding:2rem;
+  max-width:560px;width:100%;max-height:90vh;overflow-y:auto;
+}
+.modal-title{font-size:1.2rem;font-weight:800;color:var(--mauve-dark);margin-bottom:1.5rem;}
+
+@media(max-width:600px){
+  .form-row{grid-template-columns:1fr;}
+  .stats{flex-direction:column;}
+  .prod-actions{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔐 لوحة التحكم — Eman Gallery</h1>
+  <a href="/">← رجوع للمتجر</a>
+</header>
+
+<div class="container">
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-n" id="statCount">0</div>
+      <div class="stat-l">إجمالي المنتجات</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n" id="statImgs">0</div>
+      <div class="stat-l">منتج بصورة</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n" id="statWA">📱</div>
+      <div class="stat-l">رقم واتساب مضبوط</div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="card">
+    <div class="card-title">⚙️ الإعدادات</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>رقم واتساب (مع كود الدولة)</label>
+        <input type="text" id="waNumber" placeholder="مثال: 201234567890">
+      </div>
+      <div class="form-group" style="justify-content:flex-end;">
+        <label>&nbsp;</label>
+        <button class="btn btn-save" onclick="saveSettings()">💾 حفظ الإعدادات</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD / EDIT PRODUCT -->
+  <div class="card" id="formCard">
+    <div class="card-title" id="formTitle">➕ إضافة منتج جديد</div>
+    <input type="hidden" id="editId" value="">
+    <div class="form-row">
+      <div class="form-group">
+        <label>اسم المنتج *</label>
+        <input type="text" id="pName" placeholder="مثال: شنطة خرز قلب موف">
+      </div>
+      <div class="form-group">
+        <label>التاجز (مفصولة بفاصلة)</label>
+        <input type="text" id="pTags" placeholder="شنطة, قلب, موف">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group full">
+        <label>الوصف</label>
+        <textarea id="pDesc" placeholder="وصف قصير للمنتج..."></textarea>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group full">
+        <label>نص رسالة واتساب</label>
+        <input type="text" id="pWA" placeholder="مثال: عاوزة أطلب الشنطة الموف 💜">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group full">
+        <label>صورة المنتج</label>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="imgFile" accept="image/*" onchange="handleImageSelect(event)">
+          <div class="upload-icon">📷</div>
+          <div class="upload-text">اضغط أو اسحب صورة هنا</div>
+          <div class="upload-hint">JPG, PNG, WEBP — أقصى حجم 5MB</div>
+        </div>
+        <div class="img-preview" id="imgPreview"></div>
+        <input type="hidden" id="pImage" value="">
+        <p style="font-size:0.8rem;color:var(--muted);margin-top:6px;">
+          💡 الصورة بتتحفظ كـ Base64 جوه الـ JSON — مناسب للحجم الصغير
+        </p>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-save" onclick="saveProduct()">💾 حفظ المنتج</button>
+      <button class="btn btn-cancel" onclick="resetForm()">إلغاء</button>
+    </div>
+  </div>
+
+  <!-- PRODUCTS LIST -->
+  <div class="card">
+    <div class="card-title">📦 المنتجات الحالية</div>
+    <div class="products-list" id="productsList">
+      <p style="color:var(--muted);text-align:center;padding:2rem;">جارٍ التحميل...</p>
+    </div>
+  </div>
+
+  <!-- EXPORT -->
+  <div class="card">
+    <div class="card-title">📤 رفع على Vercel</div>
+    <p style="font-size:0.9rem;color:var(--muted);line-height:1.7;margin-bottom:1rem;">
+      بعد ما تضيف المنتجات، حمّل ملف products.json المحدّث وارفعه للمشروع.
+    </p>
+    <button class="btn btn-save" onclick="exportJSON()">⬇️ تحميل products.json</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let products = [];
+let settings = { wa: "201000000000" };
+
+// Load from localStorage
+function loadData(){
+  const saved = localStorage.getItem('eman_products');
+  const savedSettings = localStorage.getItem('eman_settings');
+  if(saved) products = JSON.parse(saved);
+  if(savedSettings) settings = JSON.parse(savedSettings);
+  document.getElementById('waNumber').value = settings.wa || '';
+  renderProducts();
+  updateStats();
+}
+
+function saveData(){
+  localStorage.setItem('eman_products', JSON.stringify(products));
+  localStorage.setItem('eman_settings', JSON.stringify(settings));
+}
+
+function saveSettings(){
+  settings.wa = document.getElementById('waNumber').value.trim();
+  saveData();
+  showToast('✅ تم حفظ الإعدادات');
+}
+
+function updateStats(){
+  document.getElementById('statCount').textContent = products.length;
+  document.getElementById('statImgs').textContent = products.filter(p=>p.image).length;
+  document.getElementById('statWA').textContent = settings.wa ? '✅' : '❌';
+}
+
+function renderProducts(){
+  const list = document.getElementById('productsList');
+  if(!products.length){
+    list.innerHTML='<p style="color:var(--muted);text-align:center;padding:2rem;">لا يوجد منتجات بعد — ابدأ بإضافة أول منتج!</p>';
+    return;
+  }
+  list.innerHTML = products.map((p,i)=>`
+    <div class="prod-item">
+      <div class="prod-thumb">
+        ${p.image ? `<img src="${p.image}" alt="${p.name}">` : '🧿'}
+      </div>
+      <div class="prod-info">
+        <div class="prod-name">${p.name}</div>
+        <div class="prod-meta">${(p.tags||[]).join(' • ') || 'بدون تاجز'}</div>
+      </div>
+      <div class="prod-actions">
+        <button class="btn btn-edit" onclick="editProduct(${i})">✏️ تعديل</button>
+        <button class="btn btn-del" onclick="deleteProduct(${i})">🗑️ حذف</button>
+      </div>
+    </div>
+  `).join('');
+  updateStats();
+}
+
+function handleImageSelect(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  if(file.size > 5*1024*1024){ showToast('❌ الصورة أكبر من 5MB'); return; }
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    document.getElementById('pImage').value = ev.target.result;
+    document.getElementById('imgPreview').innerHTML = `
+      <div class="preview-item">
+        <img src="${ev.target.result}" alt="preview">
+        <button onclick="clearImage()">×</button>
+      </div>`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearImage(){
+  document.getElementById('pImage').value='';
+  document.getElementById('imgPreview').innerHTML='';
+  document.getElementById('imgFile').value='';
+}
+
+function saveProduct(){
+  const name = document.getElementById('pName').value.trim();
+  if(!name){ showToast('❌ اكتب اسم المنتج'); return; }
+  const editId = document.getElementById('editId').value;
+  const product = {
+    id: editId ? parseInt(editId) : Date.now(),
+    name,
+    desc: document.getElementById('pDesc').value.trim(),
+    tags: document.getElementById('pTags').value.split(',').map(t=>t.trim()).filter(Boolean),
+    whatsapp_text: document.getElementById('pWA').value.trim() || `عاوزة أطلب: ${name}`,
+    image: document.getElementById('pImage').value
+  };
+  if(editId){
+    const idx = products.findIndex(p=>p.id===parseInt(editId));
+    if(idx>-1) products[idx]=product;
+    showToast('✅ تم تحديث المنتج');
+  } else {
+    products.push(product);
+    showToast('✅ تم إضافة المنتج');
+  }
+  saveData();
+  renderProducts();
+  resetForm();
+}
+
+function editProduct(idx){
+  const p = products[idx];
+  document.getElementById('editId').value = p.id;
+  document.getElementById('pName').value = p.name;
+  document.getElementById('pDesc').value = p.desc||'';
+  document.getElementById('pTags').value = (p.tags||[]).join(', ');
+  document.getElementById('pWA').value = p.whatsapp_text||'';
+  document.getElementById('pImage').value = p.image||'';
+  document.getElementById('formTitle').textContent = '✏️ تعديل المنتج';
+  if(p.image){
+    document.getElementById('imgPreview').innerHTML = `
+      <div class="preview-item">
+        <img src="${p.image}" alt="preview">
+        <button onclick="clearImage()">×</button>
+      </div>`;
+  }
+  document.getElementById('formCard').scrollIntoView({behavior:'smooth'});
+}
+
+function deleteProduct(idx){
+  if(!confirm('هتحذف المنتج ده؟')) return;
+  products.splice(idx,1);
+  saveData();
+  renderProducts();
+  showToast('🗑️ تم الحذف');
+}
+
+function resetForm(){
+  document.getElementById('editId').value='';
+  document.getElementById('pName').value='';
+  document.getElementById('pDesc').value='';
+  document.getElementById('pTags').value='';
+  document.getElementById('pWA').value='';
+  clearImage();
+  document.getElementById('formTitle').textContent='➕ إضافة منتج جديد';
+}
+
+function exportJSON(){
+  // Export clean version (replace base64 with /images/filename hint)
+  const exportData = products.map(p=>({...p}));
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'products.json';
+  a.click();
+  showToast('⬇️ تم تحميل products.json');
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// Drag & drop
+const zone = document.getElementById('uploadZone');
+zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over');});
+zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
+zone.addEventListener('drop',e=>{
+  e.preventDefault();zone.classList.remove('drag-over');
+  const file=e.dataTransfer.files[0];
+  if(file&&file.type.startsWith('image/')){
+    const dt=new DataTransfer();dt.items.add(file);
+    document.getElementById('imgFile').files=dt.files;
+    handleImageSelect({target:{files:[file]}});
+  }
+});
+
+loadData();
+</script>
+</body>
+</html>
